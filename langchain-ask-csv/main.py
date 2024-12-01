@@ -1,27 +1,82 @@
-import streamlit as st
-from langchain_experimental.agents.agent_toolkits import create_csv_agent
-from langchain.llms import openai
-from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+from pathlib import Path
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+import csv
 
 
-def main():
-    load_dotenv()
-    st.set_page_config(page_title="Ask your CSV 📈")
-    st.header("Ask your CSV 📈")
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
-    user_csv = st.file_uploader("Upload a CSV file", type="csv")
-    if user_csv is not None:
-        user_question = st.text_input("Ask a question about your csv")
+generation_config = {
+  "temperature": 1,
+  "top_p": 0.95,
+  "top_k": 40,
+  "max_output_tokens": 8192,
+  "response_mime_type": "text/plain",
+}
 
-        llm = openai(temperature=0)
-        agent_executor = create_csv_agent(
-            llm,
-            user_csv,
-            verbose=True
-        )
-        if user_question is not None and user_question !="":
-            st.write(f"Your question was: {user_question}")
-    
+model = genai.GenerativeModel(
+  model_name="gemini-1.5-flash",
+  generation_config=generation_config,
+)
 
-if __name__ == "__main__":
-    main()
+chat_session = model.start_chat(
+  history=[
+  ]
+)
+
+response = chat_session.send_message("HI")
+
+def csv_to_pdf(csv_filepath, pdf_filepath):
+    """Converts a CSV file to a PDF file."""
+    try:
+        with open(csv_filepath, 'r', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            header = next(reader)  
+            data = list(reader) 
+
+        c = canvas.Canvas(pdf_filepath, pagesize=letter)
+        width, height = letter
+
+        c.setFont("Helvetica", 12)
+        x = 0.5 * inch
+        y = height - 0.5 * inch
+
+        for col in header:
+            c.drawString(x, y, col)
+            x += 1.5 * inch 
+        c.showPage()  
+        x = 0.5 * inch
+        y = height - 0.5 * inch
+
+        for row in data:
+            x = 0.5 * inch
+            for col in row:
+                c.drawString(x, y, col)
+                x += 1.5 * inch
+            y -= 0.25 * inch 
+            if y < 1 * inch:
+                c.showPage()
+                y = height - 0.5 * inch
+
+
+        c.save()
+        print(f"CSV converted to PDF successfully: {pdf_filepath}")
+
+    except FileNotFoundError:
+        print(f"Error: CSV file not found: {csv_filepath}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+csv_filepath = r'C:\From Destop\interactive_visualization\langchain-ask-csv\data.csv'  
+pdf_filepath = r'C:\Users\shankaripriya s\Downloads\output.pdf'       
+csv_to_pdf(csv_filepath, pdf_filepath)
+
+media = Path(r'C:\Users\shankaripriya s\Downloads')
+sample_pdf = genai.upload_file(media / 'output.pdf')
+response = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+print(response.text)
+
+print(response.text)
