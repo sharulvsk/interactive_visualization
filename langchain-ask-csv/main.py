@@ -27,7 +27,8 @@ chat_session = model.start_chat(
   ]
 )
 
-response = chat_session.send_message("HI")
+response1 = chat_session.send_message("HI")
+print(response1.text)
 
 def csv_to_pdf(csv_filepath, pdf_filepath):
     """Converts a CSV file to a PDF file."""
@@ -76,7 +77,18 @@ csv_to_pdf(csv_filepath, pdf_filepath)
 
 media = Path(r'C:\Users\shankaripriya s\Downloads')
 sample_pdf = genai.upload_file(media / 'output.pdf')
-response = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
-print(response.text)
+response3 = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+print(response3.text)
 
-print(response.text)
+response2 = model.generate_content(response3.text)
+print(response2.text)
+
+media1 = Path(r'C:\Users\shankaripriya s\Downloads')
+myfile = genai.upload_file(media1 / 'newplot (1).png')
+print(f"{myfile=}")
+
+model = genai.GenerativeModel("gemini-1.5-flash")
+result = model.generate_content(
+    [myfile, "\n\n", "Can you tell me about this visual representation of data in depth?"]
+)
+print(f"{result.text=}")
