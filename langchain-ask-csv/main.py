@@ -4,8 +4,16 @@ import os
 import google.generativeai as genai
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
 import base64
 import io
+import PIL.Image
+import tempfile
+import csv
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
+from pathlib import Path
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "Chatbot with Purple Theme"
@@ -54,6 +62,40 @@ app.layout = html.Div(
 
 conversation_history = []
 
+def csv_to_pdf(csv_filepath, pdf_filepath):
+    """Converts a CSV file to a PDF file."""
+    try:
+        with open(csv_filepath, 'r', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            header = next(reader)
+            data = list(reader)
+        c = canvas.Canvas(pdf_filepath, pagesize=letter)
+        width, height = letter
+        c.setFont("Helvetica", 12)
+        x = 0.5 * inch
+        y = height - 0.5 * inch
+        for col in header:
+            c.drawString(x, y, col)
+            x += 1.5 * inch
+        c.showPage()
+        x = 0.5 * inch
+        y = height - 0.5 * inch
+        for row in data:
+            x = 0.5 * inch
+            for col in row:
+                c.drawString(x, y, col)
+                x += 1.5 * inch
+            y -= 0.25 * inch 
+            if y < 1 * inch:
+                c.showPage()
+                y = height - 0.5 * inch
+        c.save()
+        print(f"CSV converted to PDF successfully: {pdf_filepath}")
+    except FileNotFoundError:
+        print(f"Error: CSV file not found: {csv_filepath}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 def bot_response(user_message):
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     generation_config = {
@@ -67,11 +109,23 @@ def bot_response(user_message):
         model_name="gemini-1.5-flash",
         generation_config=generation_config,
     )
-    chat_session = model.start_chat(
-        history=[]
-    )
-    response = chat_session.send_message("HI")
-    return response.text
+    if user_message == "Hi":
+        chat_session = model.start_chat()
+        response = chat_session.send_message(user_message)
+        return response.text
+
+    elif user_message == "I have few doubts":
+        csv_filepath = r'C:\From Destop\interactive_visualization\langchain-ask-csv\data.csv'
+        pdf_filepath = r'C:\Users\shankaripriya s\Downloads\output.pdf'
+        csv_to_pdf(csv_filepath, pdf_filepath)
+        media = Path(r'C:\Users\shankaripriya s\Downloads')
+        sample_pdf = genai.upload_file(media / 'output.pdf')
+        response3 = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+        return response3.text
+    else:
+        return "I'm sorry, I don't understand that message."
+
+
 
 def parse_csv(contents):
     try:
@@ -84,14 +138,14 @@ def parse_csv(contents):
         return df
     except Exception as e:
         return f"Error parsing file: {e}"
-
+ 
 def generate_graph(df):
     if df.shape[1] < 2:
         return "Not enough data for a graph. Please upload a CSV with at least two columns."
-
     fig = px.line(df, x=df.columns[0], y=df.columns[1], title="Line Graph")
     return dcc.Graph(figure=fig)
 
+    
 @app.callback(
     [Output("chat-window", "children"), Output("user-input", "value")],
     [Input("send-button", "n_clicks"), Input("upload-csv", "contents")],
@@ -139,6 +193,7 @@ def update_chat(n_clicks, uploaded_file, user_message, chat_history):
                 className="message-container bot",
             )
         )
+        
 
         df = parse_csv(uploaded_file)
         if isinstance(df, str): 
@@ -153,6 +208,7 @@ def update_chat(n_clicks, uploaded_file, user_message, chat_history):
             )
         else:
             graph = generate_graph(df)
+            
             chat_history.append(
                 html.Div(
                     [
