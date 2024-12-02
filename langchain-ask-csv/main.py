@@ -111,16 +111,23 @@ def bot_response(user_message):
     )
     if user_message == "Hi":
         chat_session = model.start_chat()
-        response = chat_session.send_message(user_message)
-        return response.text
-
+        response1 = chat_session.send_message(user_message)
+        return response1.text
+    
+    elif user_message == "Explain the generated graph":
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        media = Path(r'C:\Users\shankaripriya s\Downloads')
+        organ = PIL.Image.open(media / "newplot (2).png")
+        response2 = model.generate_content(["Tell me about this instrument", organ])
+        return response2.text
+    
     elif user_message == "I have few doubts":
         csv_filepath = r'C:\From Destop\interactive_visualization\langchain-ask-csv\data.csv'
         pdf_filepath = r'C:\Users\shankaripriya s\Downloads\output.pdf'
         csv_to_pdf(csv_filepath, pdf_filepath)
         media = Path(r'C:\Users\shankaripriya s\Downloads')
         sample_pdf = genai.upload_file(media / 'output.pdf')
-        response3 = model.generate_content(["Give me a summary of this pdf file.", sample_pdf])
+        response3 = model.generate_content(["Summary", sample_pdf])
         return response3.text
     else:
         return "I'm sorry, I don't understand that message."
@@ -143,6 +150,7 @@ def generate_graph(df):
     if df.shape[1] < 2:
         return "Not enough data for a graph. Please upload a CSV with at least two columns."
     fig = px.line(df, x=df.columns[0], y=df.columns[1], title="Line Graph")
+
     return dcc.Graph(figure=fig)
 
     
@@ -154,72 +162,73 @@ def generate_graph(df):
 def update_chat(n_clicks, uploaded_file, user_message, chat_history):
     if chat_history is None:
         chat_history = []
-    if n_clicks > 0 and user_message:
-        chat_history.append(
-            html.Div(
-                [
-                    html.Img(src="/assets/user-avatar.png", className="avatar"),
-                    html.Div(user_message, className="message-text"),
-                ],
-                className="message-container user",
-            )
-        )
-        bot_reply = bot_response(user_message)
-        chat_history.append(
-            html.Div(
-                [
-                    html.Img(src="/assets/bot-avatar.png", className="avatar"),
-                    html.Div(bot_reply, className="message-text"),
-                ],
-                className="message-container bot",
-            )
-        )
-    if uploaded_file:
-        chat_history.append(
-            html.Div(
-                [
-                    html.Img(src="/assets/user-avatar.png", className="avatar"),
-                    html.Div("Uploaded a CSV file", className="message-text"),
-                ],
-                className="message-container user",
-            )
-        )
-        chat_history.append(
-            html.Div(
-                [
-                    html.Img(src="/assets/bot-avatar.png", className="avatar"),
-                    html.Div("CSV file uploaded successfully!", className="message-text"),
-                ],
-                className="message-container bot",
-            )
-        )
-        
 
-        df = parse_csv(uploaded_file)
-        if isinstance(df, str): 
+    if n_clicks > 0:
+        if user_message and isinstance(user_message, str):
+            chat_history.append(
+                html.Div(
+                    [
+                        html.Img(src="/assets/user-avatar.png", className="avatar"),
+                        html.Div(user_message, className="message-text"),
+                    ],
+                    className="message-container user",
+                )
+            )
+            bot_reply = bot_response(user_message)
             chat_history.append(
                 html.Div(
                     [
                         html.Img(src="/assets/bot-avatar.png", className="avatar"),
-                        html.Div(df, className="message-text"),
+                        html.Div(bot_reply, className="message-text"),
                     ],
                     className="message-container bot",
                 )
             )
-        else:
-            graph = generate_graph(df)
-            
+        elif uploaded_file:
+            chat_history.append(
+                html.Div(
+                    [
+                        html.Img(src="/assets/user-avatar.png", className="avatar"),
+                        html.Div("Uploaded a CSV file", className="message-text"),
+                    ],
+                    className="message-container user",
+                )
+            )
             chat_history.append(
                 html.Div(
                     [
                         html.Img(src="/assets/bot-avatar.png", className="avatar"),
-                        html.Div(graph, className="message-text"),
+                        html.Div("CSV file uploaded successfully!", className="message-text"),
                     ],
                     className="message-container bot",
                 )
             )
+
+            df = parse_csv(uploaded_file)
+            if isinstance(df, str):  
+                chat_history.append(
+                    html.Div(
+                        [
+                            html.Img(src="/assets/bot-avatar.png", className="avatar"),
+                            html.Div(df, className="message-text"),
+                        ],
+                        className="message-container bot",
+                    )
+                )
+            else:
+                graph = generate_graph(df)
+                chat_history.append(
+                    html.Div(
+                        [
+                            html.Img(src="/assets/bot-avatar.png", className="avatar"),
+                            html.Div(graph, className="message-text"),
+                        ],
+                        className="message-container bot",
+                    )
+                )
 
     return chat_history, ""
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
