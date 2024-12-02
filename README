@@ -1,1 +1,86 @@
-Hi
+Chatbot with Purple Theme
+A chatbot application built with Dash and Dash Bootstrap Components, featuring interactive capabilities like graph generation, CSV processing, and generative AI responses. This project is designed to be visually appealing and functional, leveraging advanced AI models for dynamic responses.
+
+Features
+Chat Interface: A user-friendly interface for interacting with the bot.
+CSV File Upload: Upload CSV files for data processing and visualization.
+Dynamic Graph Generation: Supports various types of graphs (bar, line, scatter, etc.) using Plotly.
+Generative AI Integration: Enhanced responses powered by Google Generative AI.
+PDF Conversion: Converts CSV data to PDF for easy sharing and analysis.
+Prerequisites
+Before running the application, ensure you have the following installed:
+
+Python 3.7 or higher
+Required Python libraries (see Installation below)
+Installation
+Clone the Repository:
+
+bash
+Copy code
+git clone https://github.com/your-repo/chatbot-purple-theme.git
+cd chatbot-purple-theme
+Set Up Virtual Environment:
+
+bash
+Copy code
+python -m venv venv
+source venv/bin/activate   # For Linux/Mac
+venv\Scripts\activate      # For Windows
+Install Dependencies:
+
+bash
+Copy code
+pip install -r requirements.txt
+Set Environment Variables: Create a .env file in the project root and include your Google Generative AI API key:
+
+makefile
+Copy code
+GEMINI_API_KEY=your_api_key_here
+Running the Application
+Start the Server:
+
+bash
+Copy code
+python app.py
+Access the Application: Open your web browser and navigate to http://127.0.0.1:8050.
+
+Usage
+Chat with the Bot:
+
+Type a message in the input box and click Send.
+Upload a CSV File:
+
+Click the 📂 button to upload a CSV file.
+The bot will process the file and provide a graph or analysis based on the content.
+Generate Graphs:
+
+The bot supports various graph types, including bar, line, scatter, and pie charts.
+Convert CSV to PDF:
+
+Ask the bot to generate a PDF from the uploaded CSV file.
+Dependencies
+The following Python libraries are required for this application:
+
+Dash
+Dash Bootstrap Components
+Plotly
+Pandas
+ReportLab
+Pillow
+google-generativeai
+python-dotenv
+File Structure
+bash
+Copy code
+chatbot-purple-theme/
+├── app.py                # Main application file
+├── requirements.txt      # Python dependencies
+├── assets/               # Static assets (e.g., avatars, styles)
+├── .env                  # Environment variables (not included in repo)
+└── README.md             # Project documentation
+Future Improvements
+Add support for multi-language responses.
+Extend graph customization options.
+Integrate more advanced AI features.
+License
+This project is licensed under the MIT License.
