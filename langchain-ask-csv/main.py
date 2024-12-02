@@ -109,12 +109,19 @@ def bot_response(user_message, df=None):
         model_name="gemini-1.5-flash-8b",
         generation_config=generation_config,
     )
+
     if user_message == "Hi":
         chat_session = model.start_chat()
         response1 = chat_session.send_message(user_message)
         return response1.text
 
     elif user_message == "Can you generate a specific type of analysis or visualization for the uploaded file ?":
+        chat_session = model.start_chat()
+        response2 = chat_session.send_message(user_message)
+        return response2.text
+    
+    
+    elif user_message == "I want you to generate a bar graph for the uploaded file":
         chat_session = model.start_chat()
         response2 = chat_session.send_message(user_message)
         return response2.text
@@ -135,8 +142,6 @@ def bot_response(user_message, df=None):
         response4 = model.generate_content(["Summary", sample_pdf])
         return response4.text
 
-
-
 def parse_csv(contents):
     try:
         content_type, content_string = contents.split(',')
@@ -149,19 +154,33 @@ def parse_csv(contents):
     except Exception as e:
         return f"Error parsing file: {e}"
  
-def generate_graph(df):
+
+def generate_graph(df, graph_type="bar"):
+
     if df.shape[1] < 2:
         return "Not enough data for a graph. Please upload a CSV with at least two columns."
-    fig = px.line(df, x=df.columns[0], y=df.columns[1], title="Line Graph")
-
+    
+    if graph_type == "line":
+        fig = px.line(df, x=df.columns[0], y=df.columns[1], title="Line Graph") 
+    elif graph_type == "scatter":
+        fig = px.scatter(df, x=df.columns[0], y=df.columns[1], title="Scatter Plot")
+    elif graph_type == "histogram":
+        fig = px.histogram(df, x=df.columns[0], title="Histogram")
+    elif graph_type == "box":
+        fig = px.box(df, y=df.columns[0], title="Box Plot")
+    elif graph_type == "bar":
+        fig = px.bar(df, x=df.columns[0], y=df.columns[1], title="Bar Chart")
+    elif graph_type == "pie":
+        fig = px.pie(df, names=df.columns[0], values=df.columns[1], title="Pie Chart")
+ 
     return dcc.Graph(figure=fig)
 
-    
 @app.callback(
     [Output("chat-window", "children"), Output("user-input", "value")],
     [Input("send-button", "n_clicks"), Input("upload-csv", "contents")],
     [State("user-input", "value"), State("chat-window", "children")],
 )
+
 def update_chat(n_clicks, uploaded_file, user_message, chat_history):
     if chat_history is None:
         chat_history = []
@@ -188,15 +207,6 @@ def update_chat(n_clicks, uploaded_file, user_message, chat_history):
                 )
             )
         elif uploaded_file:
-            chat_history.append(
-                html.Div(
-                    [
-                        html.Img(src="/assets/user-avatar.png", className="avatar"),
-                        html.Div("Uploaded a CSV file", className="message-text"),
-                    ],
-                    className="message-container user",
-                )
-            )
             chat_history.append(
                 html.Div(
                     [
