@@ -96,7 +96,7 @@ def csv_to_pdf(csv_filepath, pdf_filepath):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-def bot_response(user_message):
+def bot_response(user_message, df=None):
     genai.configure(api_key=os.environ["GEMINI_API_KEY"])
     generation_config = {
         "temperature": 1,
@@ -106,31 +106,34 @@ def bot_response(user_message):
         "response_mime_type": "text/plain",
     }
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-1.5-flash-8b",
         generation_config=generation_config,
     )
     if user_message == "Hi":
         chat_session = model.start_chat()
         response1 = chat_session.send_message(user_message)
         return response1.text
-    
+
+    elif user_message == "Can you generate a specific type of analysis or visualization for the uploaded file ?":
+        chat_session = model.start_chat()
+        response2 = chat_session.send_message(user_message)
+        return response2.text
+
     elif user_message == "Explain the generated graph":
         model = genai.GenerativeModel("gemini-1.5-flash")
         media = Path(r'C:\Users\shankaripriya s\Downloads')
         organ = PIL.Image.open(media / "newplot (2).png")
-        response2 = model.generate_content(["Tell me about this instrument", organ])
-        return response2.text
+        response3 = model.generate_content(["Tell me about this instrument", organ])
+        return response3.text
     
-    elif user_message == "I have few doubts":
+    elif user_message == "I have few doubts in csv":
         csv_filepath = r'C:\From Destop\interactive_visualization\langchain-ask-csv\data.csv'
         pdf_filepath = r'C:\Users\shankaripriya s\Downloads\output.pdf'
         csv_to_pdf(csv_filepath, pdf_filepath)
         media = Path(r'C:\Users\shankaripriya s\Downloads')
         sample_pdf = genai.upload_file(media / 'output.pdf')
-        response3 = model.generate_content(["Summary", sample_pdf])
-        return response3.text
-    else:
-        return "I'm sorry, I don't understand that message."
+        response4 = model.generate_content(["Summary", sample_pdf])
+        return response4.text
 
 
 
