@@ -22,7 +22,7 @@ Internet connection for AI integration
 
 Follow these steps to set up the application:
 Clone the Repository:
-git clone https://github.com/your-repo/chatbot-purple-theme.git
+git clone https://github.com/sharulvsk/interactive_visualization.git
 cd chatbot-purple-theme
 Set Up a Virtual Environment:
 python -m venv venv
