@@ -2,7 +2,7 @@
 An interactive chatbot application built with the elegance of Dash and the power of Google Generative AI. This application not only facilitates conversations but also enables data-driven insights through dynamic visualizations and CSV processing.
 
 
- Key Features
+          Key Features
 
 ✨ Interactive Chat: Engage with a bot in a stylish chat interface.
 ✨ Data Visualization: Upload CSV files to generate beautiful graphs on the fly.
@@ -11,78 +11,75 @@ An interactive chatbot application built with the elegance of Dash and the power
 ✨ Clean and Modern UI: Designed with a vibrant purple theme and responsive layout.
 
 
-🔧 Prerequisites
+           🔧 Prerequisites
 
 Ensure your system meets these requirements before proceeding:
 Python 3.7+
 Internet connection for AI integration
+Gemini API key
 
 
-🛠️ Installation
+            🛠️ Installation
 
 Follow these steps to set up the application:
-Clone the Repository:
-git clone https://github.com/sharulvsk/interactive_visualization.git
-cd chatbot-purple-theme
-Set Up a Virtual Environment:
-python -m venv venv
-source venv/bin/activate   # Linux/Mac  
-venv\Scripts\activate      # Windows 
-Install Dependencies:
-pip install -r requirements.txt
-Configure API Key:
-Create a .env file in the project directory with your API key:
-env
-GEMINI_API_KEY=your_api_key_here
+1. Clone the Repository:
+   git clone https://github.com/sharulvsk/interactive_visualization.git
+   cd "file path"
+2.Set Up a Virtual Environment:
+  python -m venv venv
+  source venv/bin/activate   # Linux/Mac  
+  venv\Scripts\activate      # Windows 
+3.Install Dependencies:
+  pip install -r requirements.txt
+  Configure API Key:
+  Create a .env file in the project directory with your API key:
+  env
+  GEMINI_API_KEY=your_api_key_here
 
 
-▶️ Running the Application
-Start the server:
-python app.py
+            ▶️ Running the Application
+1.Start the server:
+  python app.py
 
 
-Open your browser and visit:
-http://127.0.0.1:8050  
+2.Open your browser and visit:
+  http://127.0.0.1:8050  
 
 
-🎨 Usage
+            🎨 Usage
 
-Chat with the Bot:
-Type a message and click Send to start a conversation.
+1.Chat with the Bot:
+  Type a message and click Send to start a conversation.
 
-Upload a CSV File:
-Click the 📂 button to upload a CSV file for analysis.
+2.Upload a CSV File:
+  Click the 📂 button to upload a CSV file for analysis.
 
-Generate Graphs:
-Request various graph types such as bar, line, scatter, and pie.
+3.Generate Graphs:
+  Request various graph types such as bar, line, scatter, and pie.
 
-Convert CSV to PDF:
-Ask the bot to create a PDF from your CSV data.
-
-
-📊 Supported Graph Types
-
-Graph Type	Description	Example Use Case
-Bar Chart	Compare quantities across categories	Sales data comparison
-Line Graph	Visualize trends over time	Stock price movements
-Scatter Plot	Show relationships between variables	Correlation analysis
-Pie Chart	Display proportions	Market share breakdown
-Histogram	Analyze data distribution	Frequency of test scores
-Box Plot	Display data variability	Outlier detection in datasets
+4.Convert CSV to PDF for asking doubts about csv:
+  Ask the bot to create a PDF from your CSV data.
 
 
-🌟 Future Enhancements
+            📊 Supported Graph Types
 
-Multi-Language Support: Chat in different languages.
-Advanced Graph Customizations: Provide detailed graph settings.
-Real-Time Data Integration: Fetch live data for dynamic insights.
+1.Graph Type	Description	Example Use Case
+2.Bar Chart	Compare quantities across categories	Sales data comparison
+3.Line Graph	Visualize trends over time	Stock price movements
+4.Scatter Plot	Show relationships between variables	Correlation analysis
+5.Pie Chart	Display proportions	Market share breakdown
+6.Histogram	Analyze data distribution	Frequency of test scores
+7.Box Plot	Display data variability	Outlier detection in datasets
 
 
-📜 License
-This project is licensed under the MIT License.
+           🌟 Future Enhancements
+
+1.Multi-Language Support: Chat in different languages.
+2.Advanced Graph Customizations: Provide detailed graph settings.
+3.Real-Time Data Integration: Fetch live data for dynamic insights.
 
 
-🤝 Contributing
+          🤝 Contributing
 We welcome contributions to improve this application. Please create an issue or submit a pull request!
 
 GitHub: your-username
